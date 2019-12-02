@@ -1,18 +1,36 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="D:\Personnal Data\Google Drive\Programmation\Visual Studio C++\GTA5 LedsEffects\GTA5-Backlight-Mod\backlightMod\Serial.cpp">
+      <Filter>tools</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Personnal Data\Google Drive\Programmation\Visual Studio C++\GTA5 LedsEffects\GTA5-Backlight-Mod\backlightMod\Color.cpp">
+      <Filter>tools</Filter>
+    </ClCompile>
     <ClCompile Include="script.cpp" />
-    <ClCompile Include="ledseffects\EffectReader.cpp">
-      <Filter>effects</Filter>
-    </ClCompile>
-    <ClCompile Include="ledseffects\Serial.cpp">
-      <Filter>effects\tools</Filter>
-    </ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="D:\Personnal Data\Google Drive\Programmation\Visual Studio C++\GTA5 LedsEffects\GTA5-Backlight-Mod\backlightMod\EffectHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="D:\Personnal Data\Google Drive\Programmation\Visual Studio C++\GTA5 LedsEffects\GTA5-Backlight-Mod\backlightMod\Color.h">
+      <Filter>tools</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Personnal Data\Google Drive\Programmation\Visual Studio C++\GTA5 LedsEffects\GTA5-Backlight-Mod\backlightMod\Serial.h">
+      <Filter>tools</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Personnal Data\Google Drive\Programmation\Visual Studio C++\GTA5 LedsEffects\GTA5-Backlight-Mod\backlightMod\AsMath.h">
+      <Filter>tools</Filter>
+    </ClInclude>
     <ClInclude Include="script.h" />
+    <ClInclude Include="D:\Personnal Data\Google Drive\Programmation\Visual Studio C++\GTA5 LedsEffects\GTA5-Backlight-Mod\backlightMod\effects.h" />
+    <ClInclude Include="D:\Personnal Data\Google Drive\Programmation\Visual Studio C++\GTA5 LedsEffects\GTA5-Backlight-Mod\backlightMod\EffectHandler.h" />
+    <ClInclude Include="..\..\inc\enums.h">
+      <Filter>includes</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\inc\main.h">
+      <Filter>includes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\inc\nativeCaller.h">
       <Filter>includes</Filter>
     </ClInclude>
     <ClInclude Include="..\..\inc\natives.h">
@@ -21,34 +39,13 @@
     <ClInclude Include="..\..\inc\types.h">
       <Filter>includes</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\inc\enums.h">
-      <Filter>includes</Filter>
-    </ClInclude>
-    <ClInclude Include="ledseffects\effect_mono.h">
-      <Filter>effects</Filter>
-    </ClInclude>
-    <ClInclude Include="ledseffects\effect_police.h">
-      <Filter>effects</Filter>
-    </ClInclude>
-    <ClInclude Include="ledseffects\EffectReader.h">
-      <Filter>effects</Filter>
-    </ClInclude>
-    <ClInclude Include="ledseffects\generic_effect.h">
-      <Filter>effects</Filter>
-    </ClInclude>
-    <ClInclude Include="ledseffects\Serial.h">
-      <Filter>effects\tools</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="includes">
       <UniqueIdentifier>{7378df68-e5e5-4298-b768-5ea241e79387}</UniqueIdentifier>
     </Filter>
-    <Filter Include="effects">
+    <Filter Include="tools">
       <UniqueIdentifier>{b0f814ce-af6d-49ec-9027-7870760a8687}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="effects\tools">
-      <UniqueIdentifier>{5d65f688-265b-4ab3-827d-a7a1f4efcc76}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

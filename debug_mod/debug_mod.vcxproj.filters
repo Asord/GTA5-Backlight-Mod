@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Fichiers sources">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Fichiers de ressources">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Fichiers sources\tools">
+      <UniqueIdentifier>{64fd9215-e531-4112-8096-030ee4ae378e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="D:\Personnal Data\Google Drive\Programmation\Visual Studio C++\GTA5 LedsEffects\GTA5-Backlight-Mod\backlightMod\Color.cpp">
+      <Filter>Fichiers sources\tools</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Personnal Data\Google Drive\Programmation\Visual Studio C++\GTA5 LedsEffects\GTA5-Backlight-Mod\backlightMod\Serial.cpp">
+      <Filter>Fichiers sources\tools</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Personnal Data\Google Drive\Programmation\Visual Studio C++\GTA5 LedsEffects\GTA5-Backlight-Mod\backlightMod\EffectHandler.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\backlightMod\main.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\backlightMod\script.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="D:\Personnal Data\Google Drive\Programmation\Visual Studio C++\GTA5 LedsEffects\GTA5-Backlight-Mod\backlightMod\AsMath.h">
+      <Filter>Fichiers sources\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Personnal Data\Google Drive\Programmation\Visual Studio C++\GTA5 LedsEffects\GTA5-Backlight-Mod\backlightMod\Color.h">
+      <Filter>Fichiers sources\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Personnal Data\Google Drive\Programmation\Visual Studio C++\GTA5 LedsEffects\GTA5-Backlight-Mod\backlightMod\Serial.h">
+      <Filter>Fichiers sources\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\backlightMod\script.h">
+      <Filter>Fichiers sources</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Personnal Data\Google Drive\Programmation\Visual Studio C++\GTA5 LedsEffects\GTA5-Backlight-Mod\backlightMod\EffectHandler.h">
+      <Filter>Fichiers sources</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Personnal Data\Google Drive\Programmation\Visual Studio C++\GTA5 LedsEffects\GTA5-Backlight-Mod\backlightMod\effects.h">
+      <Filter>Fichiers sources</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

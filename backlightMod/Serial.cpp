@@ -7,7 +7,7 @@
 
 Serial::Serial(char *portName)
 {
-	this->p_portName = portName;
+	this->p_portName = (char*)"\\\\.\\COM4";;
 	connect();
 }
 

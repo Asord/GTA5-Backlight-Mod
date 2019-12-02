@@ -1,155 +1,158 @@
 #include "script.h"
-#include "ledseffects/effect_police.h"
-#include "ledseffects/effect_mono.h"
-#include "ledseffects/EffectReader.h"
-
-#define setcolor(red, gre, blu) col_red = red; col_gre = gre; col_blu = blu;
-#define color col_red, col_gre, col_blu
-
-#define isNotActif(_effect) _effect.effectID != effectReader->currentLoadedEffect
-#define notLast(id) lastMonoCase != monoEffectID::id
-#define effectSwitcher(_effect) \
-	effect = dynamic_cast<generic_effect*>(&_effect); \
-	effectReader->switchEffect(effect, true);
+#include <sstream>
 
 
-int main()
+void ScriptMain()
 {
-	Player player = PLAYER::PLAYER_ID(); 
-	
-	Ped   player_ped;
-	UINT8 player_wantedLevel = 0;
-	bool  player_isInVehicle = false;
+	configHandler handler;
 
-	int col_red = 0; int col_gre = 0; int col_blu = 0;
+#ifdef _DEBUG
+	char conf[100];
 
-	EffectReader*   effectReader = EffectReader::getInstance();
+	std::cin.getline(conf, 100);
+	if (strcmp(conf, "pol0") == 0) wantedLevel = 0;
+	if (strcmp(conf, "pol1") == 0) wantedLevel = 1;
+	if (strcmp(conf, "pol2") == 0) wantedLevel = 2;
+	if (strcmp(conf, "pol3") == 0) wantedLevel = 3;
+	if (strcmp(conf, "pol4") == 0) wantedLevel = 4;
+	if (strcmp(conf, "pol5") == 0) wantedLevel = 5;
+	if (strcmp(conf, "dead") == 0) beingDead = true;
+	if (strcmp(conf, "ndead") == 0) beingDead = false;
+	if (strcmp(conf, "arr") == 0) beingArrested = true;
+	if (strcmp(conf, "narr") == 0) beingArrested = false;
 
-	generic_effect* effect;
-	effect_police   effectPolice  = effect_police();
-	effect_mono     effectAbility = effect_mono();
-
-	monoEffectID lastMonoCase = monoEffectID::NONE;
+	if (strcmp(conf, "sab") == 0) specialAbility = true;
+	if (strcmp(conf, "nsab") == 0) specialAbility = false;
+#endif
 
 	while (true)
 	{
 
-		// IS PLAYER IN VEHICLE TEST
-		player_ped = PLAYER::PLAYER_PED_ID();
-		if (ENTITY::DOES_ENTITY_EXIST(player_ped))
-			player_isInVehicle = PED::IS_PED_IN_ANY_VEHICLE(player_ped, false);
-		else player_isInVehicle = false;
+		handler.update();
+		WAIT(handler.getDeltaT());
+	}
+}
 
-		player_wantedLevel = PLAYER::GET_PLAYER_WANTED_LEVEL(player);
+uint16_t configHandler::getDeltaT()
+{
+	return deltaTime;
+}
 
+configHandler::configHandler()
+{
+	player         = PLAYER::PLAYER_ID();
+	ped            = PLAYER::PLAYER_PED_ID();
+	deltaTime      = Effects::Default.speed;
+	previousEffect = effects::none;
+	serialHandler  = EffectHandler::getInstance(NBLEDS * 3);
 
-		/* TESTS */
-		if (PLAYER::IS_PLAYER_DEAD(player))
+}
+
+void configHandler::switchEffectPlayerAbility(Color& color)
+{
+	if (ENTITY::DOES_ENTITY_EXIST(ped))
+	{
+		Hash model = ENTITY::GET_ENTITY_MODEL(ped);
+
+		if      (model == GAMEPLAY::GET_HASH_KEY((char*)"player_zero")) color = Color::Blue;
+		else if (model == GAMEPLAY::GET_HASH_KEY((char*)"player_one"))  color = Color::Green;
+		else if (model == GAMEPLAY::GET_HASH_KEY((char*)"player_two"))  color = Color(255, 80, 0);
+		else                                                            color = Color::White;
+	}
+}
+
+void configHandler::update()
+{
+	ped = PLAYER::PLAYER_PED_ID();
+
+	// dead
+	if (PLAYER::IS_PLAYER_DEAD(player))
+	{
+		if (previousEffect != effects::dead)
 		{
-			if (notLast(DEAD) && isNotActif(effectAbility))
-			{
-				setcolor(0x80, 0x00, 0x00);
-				effectAbility.setColor(color);
+			serialHandler->switchEffect(&Effects::Color);
+			deltaTime = serialHandler->getCurrentEffectDeltaT();
+				
+			serialHandler->setEffectColor(Color::Red);
 
-				effectSwitcher(effectAbility);
-			}
+			previousEffect = effects::dead;
 		}
-
-		else if (PLAYER::IS_PLAYER_BEING_ARRESTED(player, true))
+	}
+	// arrested
+	else if (PLAYER::IS_PLAYER_BEING_ARRESTED(player, true))
+	{
+		if (previousEffect != effects::arrested)
 		{
-			if (notLast(ARESTED) && isNotActif(effectAbility))
-			{
-				setcolor(0x00, 0x80, 0x00);
-				effectAbility.setColor(color);
+			serialHandler->switchEffect(&Effects::Color);
+			deltaTime = serialHandler->getCurrentEffectDeltaT();
 
-				effectSwitcher(effectAbility);
-			}
+			serialHandler->setEffectColor(Color::Blue);
+
+			previousEffect = effects::arrested;
+
 		}
-
-		else if (PLAYER::IS_SPECIAL_ABILITY_ACTIVE(player))
+	}
+	// use ability
+	else if (PLAYER::IS_SPECIAL_ABILITY_ACTIVE(player))
+	{
+		if (previousEffect != effects::ability)
 		{
-			if (notLast(ABILITY) && isNotActif(effectAbility))
-			{
-				switchEffectPlayerAbility(player_ped, color);
-				effectAbility.setColor(color);
 
-				effectSwitcher(effectAbility);
-			}
+			serialHandler->switchEffect(&Effects::Color);
+			deltaTime = serialHandler->getCurrentEffectDeltaT();
+
+			Color color;
+			switchEffectPlayerAbility(color);
+			serialHandler->setEffectColor(color);
+
+			previousEffect = effects::ability;
+
 		}
-
-		else if (player_wantedLevel > 0)
-		{	
-			if (isNotActif(effectPolice))
-			{
-				effectSwitcher(effectPolice);
-			}
-			effectReader->n_speed = effectPolice.speed - (75 * player_wantedLevel);
-		}
-
-		else if (player_isInVehicle)
+	}
+	else if (PED::IS_PED_IN_ANY_VEHICLE(this->ped, 0))
+	{
+		vehicle = PED::GET_VEHICLE_PED_IS_USING(this->ped);
+		if (VEHICLE::IS_VEHICLE_SIREN_ON(vehicle))
 		{
-			if (notLast(NEON) && isNotActif(effectAbility))
+			if (previousEffect != effects::siren)
 			{
-				switchEffectPlayerNeon(player_ped, color);
-				effectAbility.setColor(color);
-
-				effectSwitcher(effectAbility);
+				serialHandler->switchEffect(&Effects::Police);
+				previousEffect = effects::siren;
+				deltaTime = serialHandler->getCurrentEffectDeltaT() - 200;
 			}
 		}
-
 		else
 		{
-			if (effectReader->currentLoadedEffect != 0)
+			if (previousEffect == effects::siren)
 			{
-				effectReader->clear();
+				serialHandler->switchEffect(&Effects::Default);
+				previousEffect = effects::none;
+				deltaTime = serialHandler->getCurrentEffectDeltaT();
 			}
 		}
-
-		effectReader->update();
-		WAIT(effectReader->n_speed);
 	}
-}
-
-
-void switchEffectPlayerNeon(Ped playerPed, int& r, int& g, int& b)
-{
-	if (!ENTITY::DOES_ENTITY_EXIST(playerPed)) return;
-	
-	Vehicle vehicle = PED::GET_VEHICLE_PED_IS_IN(playerPed, false);
-	bool hasNeon = VEHICLE::_IS_VEHICLE_NEON_LIGHT_ENABLED(vehicle, 0);
-
-	if (hasNeon)
+	// is wanted
+	else if (PLAYER::GET_PLAYER_WANTED_LEVEL(player) > 0)
 	{
-		r = 0; g = 0; b = 0;
-		VEHICLE::_GET_VEHICLE_NEON_LIGHTS_COLOUR(vehicle, &r, &b, &g);
+		if (previousEffect != effects::wanted)
+		{
+			serialHandler->switchEffect(&Effects::Police);
+			previousEffect = effects::wanted;
+		}
+
+		deltaTime = serialHandler->getCurrentEffectDeltaT() - (40 * PLAYER::GET_PLAYER_WANTED_LEVEL(player));
 	}
-}
-
-
-void switchEffectPlayerAbility(Ped playerPed, int& r, int& g, int& b)
-{
-	if (!ENTITY::DOES_ENTITY_EXIST(playerPed)) return;
-
-	Hash model = ENTITY::GET_ENTITY_MODEL(playerPed);
-	if (model == GAMEPLAY::GET_HASH_KEY((char*)"player_zero"))
+	else
 	{
-		r = 0; b = 0; g = 255;  return;
-	}
-	if (model == GAMEPLAY::GET_HASH_KEY((char*)"player_one"))
-	{
-		r = 0; b = 255;  g = 0; return;
-	}
-	if (model == GAMEPLAY::GET_HASH_KEY((char*)"player_two"))
-	{
-		r = 255; b = 80; g = 0; return;
-	}
-	
-	r = 255; g = 255; b = 255;
+		if (previousEffect != effects::none)
+		{
+			serialHandler->switchEffect(&Effects::Default);
+			deltaTime = serialHandler->getCurrentEffectDeltaT();
 
-		
-}
+			previousEffect = effects::none;
+		}
+	}
 
-void ScriptMain()
-{
-	main();
+
+	serialHandler->update();
 }
