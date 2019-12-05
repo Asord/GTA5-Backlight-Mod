@@ -19,10 +19,19 @@ public:
 	UINT8* buffer;
 	UINT16  bufferSize;
 
+	// overrides parametters
+	bool isEffectOverrided;
+	size_t overridenFrom;
+	size_t overridenLengthAfterCursor;
+	size_t overridenCursor;
+	Color overrideColor;
+
+
 
 	// singleton
 private:
 	static EffectHandler* instance;
+	static UINT8          nbInstances;
 	EffectHandler(UINT16 bufferSize);
 public:
 	static EffectHandler* getInstance(UINT16 bufferSize = 0);
@@ -44,4 +53,6 @@ public:
 
 	uint8_t getCurrentEffectID();
 	uint16_t getCurrentEffectDeltaT();
+
+	void overrideEffectWithSingleColor(uint16_t basePos, uint16_t length, uint16_t currentPos, Color color);
 };

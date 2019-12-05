@@ -1,5 +1,9 @@
 #pragma once
 
+#include "EffectHandler.h"
+#include "Color.h"
+#include <string>
+
 #ifdef _DEBUG
 typedef int Player;
 typedef int Ped;
@@ -42,9 +46,6 @@ namespace GAMEPLAY
 #include "..\..\inc\main.h"
 #endif
 
-#include "EffectHandler.h"
-#include "Color.h"
-#include <string>
 
 #define NBLEDS 21
 
@@ -55,6 +56,7 @@ enum effects
 	ability,
 	siren,
 	wanted,
+	underwater,
 	none
 };
 

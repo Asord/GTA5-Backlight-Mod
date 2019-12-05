@@ -2,6 +2,7 @@
 
 char COMPORT[] = "\\\\.\\COM4";
 EffectHandler* EffectHandler::instance = nullptr;
+UINT8 EffectHandler::nbInstances = 0;
 
 void EffectHandler::setHeader()
 {
@@ -20,11 +21,19 @@ void EffectHandler::setHeader()
 
 EffectHandler::EffectHandler(UINT16 bufferSize): serial(COMPORT)
 {
+	EffectHandler::nbInstances = 0;
+
 	this->buffer      = new uint8_t[6 + bufferSize];
 	this->bufferSize  =                  bufferSize;
 
 	this->effectColor = Color(0, 0, 0);
 	this->framePos    = 0;
+
+	this->isEffectOverrided = false;
+	this->overridenFrom = 0;
+	this->overridenLengthAfterCursor = 0;
+	this->overridenCursor = 0;
+	this->overrideColor = Color::Black;
 
 	switchEffect(&Effects::Default);
 
@@ -36,14 +45,23 @@ EffectHandler * EffectHandler::getInstance(UINT16 bufferSize)
 {
 	if (EffectHandler::instance == nullptr)
 		EffectHandler::instance = new EffectHandler(bufferSize);
+	
+	EffectHandler::nbInstances++;
 
 	return EffectHandler::instance;
 }
 
 EffectHandler::~EffectHandler()
 {
-	unlock();
-	EffectHandler::instance = nullptr;
+	if (EffectHandler::nbInstances != 1)
+	{
+		EffectHandler::nbInstances--;
+	}
+	else
+	{
+		unlock();
+		EffectHandler::instance = nullptr;
+	}
 }
 
 void EffectHandler::unlock()
@@ -77,6 +95,17 @@ void EffectHandler::update()
 				memset(&buffer[6 + frameSize], 0, bufferSize);
 			}
 
+			if (this->isEffectOverrided)
+			{
+				for (size_t i = this->overridenFrom; i < this->overridenCursor; ++i)
+				{
+					buffer[6 + 3*i + 0] = this->overrideColor.getRed();
+					buffer[6 + 3*i + 1] = this->overrideColor.getGreen();
+					buffer[6 + 3*i + 2] = this->overrideColor.getBlue();
+				}
+				memset(&buffer[6 + 3 * this->overridenCursor], 0, this->overridenLengthAfterCursor * 3);
+			}
+
 			this->framePos++;
 			if (this->framePos == this->effect->data.size()) this->framePos = 0;
 		}
@@ -107,6 +136,9 @@ void EffectHandler::clear()
 
 void EffectHandler::switchEffect(Effect * e)
 {
+	if (this->isEffectOverrided)
+		this->isEffectOverrided = false;
+
 	this->effect = e;
 	this->framePos = 0;
 	this->effectColor = Color(0, 0, 0);
@@ -131,4 +163,18 @@ uint8_t EffectHandler::getCurrentEffectID()
 uint16_t EffectHandler::getCurrentEffectDeltaT()
 {
 	return this->effect->speed;
+}
+
+
+void EffectHandler::overrideEffectWithSingleColor(uint16_t basePos, uint16_t length, uint16_t currentPos, Color color)
+{
+	if (currentPos <= length)
+	{
+		this->isEffectOverrided = true;
+
+		this->overrideColor = color.coef(1.0f, 0.42f, 0.3f);
+		this->overridenFrom = basePos;
+		this->overridenCursor = basePos + currentPos;
+		this->overridenLengthAfterCursor = basePos + length - this->overridenCursor;
+	}
 }

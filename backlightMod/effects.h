@@ -2,11 +2,6 @@
 #include <vector>
 #include <iostream>
 
-#define B   0,   0, 255
-#define R 255,   0,   0
-#define Y 255, 186,   0
-#define N   0,   0,   0
-
 struct Effect
 {
 	uint8_t ID;

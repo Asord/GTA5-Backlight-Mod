@@ -1,7 +1,6 @@
 #include "script.h"
 #include <sstream>
 
-
 void ScriptMain()
 {
 	configHandler handler;
@@ -61,9 +60,13 @@ void configHandler::switchEffectPlayerAbility(Color& color)
 	}
 }
 
+
 void configHandler::update()
 {
 	ped = PLAYER::PLAYER_PED_ID();
+
+	if (PED::IS_PED_IN_ANY_VEHICLE(this->ped, 0)) vehicle = PED::GET_VEHICLE_PED_IS_USING(this->ped);
+	else                                          vehicle = 0;
 
 	// dead
 	if (PLAYER::IS_PLAYER_DEAD(player))
@@ -79,7 +82,7 @@ void configHandler::update()
 		}
 	}
 	// arrested
-	else if (PLAYER::IS_PLAYER_BEING_ARRESTED(player, true))
+	else if(PLAYER::IS_PLAYER_BEING_ARRESTED(player, true))
 	{
 		if (previousEffect != effects::arrested)
 		{
@@ -92,7 +95,7 @@ void configHandler::update()
 
 		}
 	}
-	// use ability
+	// ability
 	else if (PLAYER::IS_SPECIAL_ABILITY_ACTIVE(player))
 	{
 		if (previousEffect != effects::ability)
@@ -109,29 +112,17 @@ void configHandler::update()
 
 		}
 	}
-	else if (PED::IS_PED_IN_ANY_VEHICLE(this->ped, 0))
+	// siren
+	else if (vehicle != 0 && VEHICLE::IS_VEHICLE_SIREN_ON(vehicle))
 	{
-		vehicle = PED::GET_VEHICLE_PED_IS_USING(this->ped);
-		if (VEHICLE::IS_VEHICLE_SIREN_ON(vehicle))
+		if (previousEffect != effects::siren)
 		{
-			if (previousEffect != effects::siren)
-			{
-				serialHandler->switchEffect(&Effects::Police);
-				previousEffect = effects::siren;
-				deltaTime = serialHandler->getCurrentEffectDeltaT() - 200;
-			}
-		}
-		else
-		{
-			if (previousEffect == effects::siren)
-			{
-				serialHandler->switchEffect(&Effects::Default);
-				previousEffect = effects::none;
-				deltaTime = serialHandler->getCurrentEffectDeltaT();
-			}
+			serialHandler->switchEffect(&Effects::Police);
+			previousEffect = effects::siren;
+			deltaTime = serialHandler->getCurrentEffectDeltaT() - 200;
 		}
 	}
-	// is wanted
+	// wanted
 	else if (PLAYER::GET_PLAYER_WANTED_LEVEL(player) > 0)
 	{
 		if (previousEffect != effects::wanted)
@@ -140,8 +131,24 @@ void configHandler::update()
 			previousEffect = effects::wanted;
 		}
 
+		serialHandler->overrideEffectWithSingleColor(6, 5, PLAYER::GET_PLAYER_WANTED_LEVEL(player), Color(255, 255, 0));
 		deltaTime = serialHandler->getCurrentEffectDeltaT() - (40 * PLAYER::GET_PLAYER_WANTED_LEVEL(player));
 	}
+	// underwater
+	else if (PED::IS_PED_SWIMMING_UNDER_WATER(ped))
+	{
+		if (previousEffect != effects::underwater)
+		{
+			serialHandler->switchEffect(&Effects::Color);
+			deltaTime = serialHandler->getCurrentEffectDeltaT();
+
+			serialHandler->setEffectColor(Color(0, 100, 130));
+
+			previousEffect = effects::underwater;
+
+		}
+	}
+	// nothing
 	else
 	{
 		if (previousEffect != effects::none)
@@ -153,6 +160,6 @@ void configHandler::update()
 		}
 	}
 
-
 	serialHandler->update();
 }
+
